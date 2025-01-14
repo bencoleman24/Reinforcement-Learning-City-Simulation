@@ -1,5 +1,5 @@
 # new_app.py
-from flask import Flask, request, jsonify
+from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 import sys
 import os
@@ -11,7 +11,11 @@ sys.path.append(CITY_SIM_DIR)
 from city_env import CityEnv
 from government_rl import train_advanced_rl
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="build",
+    static_url_path=""
+)
 CORS(app)
 
 @app.route('/run_sim', methods=['POST'])

@@ -38,7 +38,7 @@ export default function LoadingPage() {
     timeoutIdRef.current = setTimeout(goToNextMessage, MESSAGES[0].duration);
 
     axios
-      .post("http://localhost:5003/run_sim", userConfig)
+      .post("/run_sim", userConfig)
       .then((resp) => {
         if (timeoutIdRef.current) {
           clearTimeout(timeoutIdRef.current);

@@ -1,0 +1,5 @@
+Flask==2.2.3
+flask-cors==3.0.10
+stable-baselines3==1.7.0
+gym==0.21.0
+numpy==1.23.5

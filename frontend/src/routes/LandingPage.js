@@ -111,7 +111,7 @@ function LandingPage() {
         }}
       >
         <a
-          href="https://github.com/YourName/CitySim"
+          href="https://github.com/bencoleman24/Reinforcement-Learning-City-Simulation"
           target="_blank"
           rel="noopener noreferrer"
           style={{

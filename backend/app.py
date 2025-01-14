@@ -18,7 +18,7 @@ def run_sim():
     data = request.get_json()
     gov_mode = data.get("reward_mode", "basic_happiness")
     episode_length = data.get("episode_length", 60)
-    training_steps = data.get("training_steps", 20000)
+    training_steps = data.get("training_steps", 15000)
     cost_of_living = data.get("household_cost_of_living", 7.0)
     wage_min = data.get("household_wage_min", 13)
     wage_max = data.get("household_wage_max", 17)

@@ -3,8 +3,8 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const MESSAGES = [
-  { text: "Training government RL agent on your city...", duration: 15000 },
-  { text: "Running city simulation...", duration: 10000 },
+  { text: "Training government RL agent on your city...", duration: 40000 },
+  { text: "Running city simulation...", duration: 20000 },
   { text: "Preparing analytics and results...", duration: null },
 ];
 
@@ -73,7 +73,7 @@ export default function LoadingPage() {
       <p>
         Please wait while we run everything!{" "}
         <span style={{ fontStyle: "italic" }}>
-          (Should take about 30 sec)
+          (Should take about 1 min)
         </span>
       </p>
 

@@ -95,7 +95,7 @@ function AdditionalStatsPanel({
   );
 }
 
-function PolicySummaryPanel({ debugSteps, chosenMode }) {
+function PolicySummaryPanel({ debugSteps, chosenMode }) { // Removed customWeights from props
   if (!debugSteps || debugSteps.length === 0) {
     return (
       <div className="panel" style={{ marginTop: "2rem" }}>
@@ -279,7 +279,7 @@ function NotableEventsPanel({ debugSteps }) {
   );
 }
 
-export default function ResultsPageNoCustomWeights() {
+export default function ResultsPageWithoutCustomWeights() { // Renamed component
   const navigate = useNavigate();
   const location = useLocation();
   const simData = location.state?.simData;

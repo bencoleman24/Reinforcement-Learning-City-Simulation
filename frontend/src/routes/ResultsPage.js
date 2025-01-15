@@ -95,7 +95,7 @@ function AdditionalStatsPanel({
   );
 }
 
-function PolicySummaryPanel({ debugSteps, chosenMode, customWeights }) {
+function PolicySummaryPanel({ debugSteps, chosenMode }) {
   if (!debugSteps || debugSteps.length === 0) {
     return (
       <div className="panel" style={{ marginTop: "2rem" }}>
@@ -127,25 +127,11 @@ function PolicySummaryPanel({ debugSteps, chosenMode, customWeights }) {
 
   const displayMode = getModeDisplayName(chosenMode);
 
-  let customLine = null;
-  if (chosenMode === "custom" && customWeights) {
-    const { hap = 0, pop = 0, infra = 0, profit = 0, deficit = 0 } =
-      customWeights;
-    customLine = (
-      <p style={{ fontSize: "0.85rem", margin: "0.5rem 0 0 0" }}>
-        <em>Custom Weights:</em> hap={hap.toFixed(2)}, pop={pop.toFixed(2)},
-        infra={infra.toFixed(2)}, profit={profit.toFixed(2)}, deficit=
-        {deficit.toFixed(2)}
-      </p>
-    );
-  }
-
   return (
     <div className="panel" style={{ marginTop: "2rem" }}>
       <h3 style={{ marginBottom: "0.5rem" }}>Government Policy</h3>
       <p style={{ marginBottom: "1rem", fontSize: "1rem" }}>
         <strong>Chosen Mode:</strong> {displayMode}
-        {customLine}
       </p>
 
       <table
@@ -293,7 +279,7 @@ function NotableEventsPanel({ debugSteps }) {
   );
 }
 
-export default function ResultsPage() {
+export default function ResultsPageNoCustomWeights() {
   const navigate = useNavigate();
   const location = useLocation();
   const simData = location.state?.simData;
@@ -317,7 +303,6 @@ export default function ResultsPage() {
     final_stats,
     debug_steps,
     chosen_gov_mode,
-    custom_weights,
   } = simData;
 
   const debugSteps = debug_steps || [];
@@ -403,7 +388,6 @@ export default function ResultsPage() {
       <PolicySummaryPanel
         debugSteps={debugSteps}
         chosenMode={chosen_gov_mode || final_stats?.chosen_gov_mode || "unknown"}
-        customWeights={custom_weights || {}}
       />
 
       <NotableEventsPanel debugSteps={debugSteps} />

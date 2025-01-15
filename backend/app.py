@@ -26,23 +26,27 @@ def run_sim():
     demand_sensitivity = data.get("demand_sensitivity", 0.35)
     shock_prob = data.get("shock_probability", 0.0)
     inflation = data.get("inflation_rate", 0.0)
+
     raw_params = data.get("raw_firm_params", {})
     raw_params.setdefault("base_wage", 7.0)
     raw_params.setdefault("production_factor", 2.0)
     raw_params.setdefault("material_price", 3.8)
     raw_params.setdefault("min_employees", 2)
     raw_params.setdefault("max_capacity", 50)
+
     manu_params = data.get("manu_firm_params", {})
     manu_params.setdefault("base_wage", 9.0)
     manu_params.setdefault("sale_price", 20.0)
     manu_params.setdefault("material_cost", 3.5)
     manu_params.setdefault("min_employees", 2)
     manu_params.setdefault("max_capacity", 50)
+
     retail_params = data.get("retail_firm_params", {})
     retail_params.setdefault("base_wage", 5.0)
     retail_params.setdefault("wholesale_price", 8.0)
     retail_params.setdefault("retail_price", 18.0)
     retail_params.setdefault("max_capacity", 50)
+
     param_config = {
         "num_households": data.get("num_households", 50),
         "num_raw_firms": data.get("num_raw_firms", 2),
@@ -65,7 +69,13 @@ def run_sim():
         "retail_firm_params": retail_params,
         "generic_firm_params": data.get("generic_firm_params", {}),
     }
+
+    if gov_mode == "custom":
+        custom_weights = data.get("custom_weights", {})
+        param_config["custom_weights"] = custom_weights
+
     print("[DEBUG] param_config used by website:", param_config)
+
     model = train_advanced_rl(param_config, total_timesteps=training_steps)
     env = CityEnv(**param_config)
     obs = env.reset()
@@ -77,12 +87,14 @@ def run_sim():
     budget_series = []
     leftover_spend_series = []
     profit_series = []
+
     time_steps.append(step)
     happiness_series.append(env._get_avg_happiness())
     population_series.append(len(env.households))
     budget_series.append(env.gov.budget)
     leftover_spend_series.append(0.0)
     profit_series.append(0.0)
+
     while not done:
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
@@ -93,12 +105,15 @@ def run_sim():
         budget_series.append(env.gov.budget)
         leftover_spend_series.append(info["leftover_spend"])
         profit_series.append(info["daily_profits"])
+
         if step >= episode_length or done:
             break
+
     final_hap = happiness_series[-1] if happiness_series else 0.0
     final_pop = population_series[-1] if population_series else 0
     final_bud = budget_series[-1] if budget_series else 0.0
     final_pro = profit_series[-1] if profit_series else 0.0
+
     response_data = {
         "time_steps": time_steps,
         "happiness_series": happiness_series,

@@ -95,8 +95,6 @@ function AdvancedConfig() {
         infra: infraWeight,
         profit: profitWeight,
       };
-    } else {
-      finalConfig.custom_weights = { deficit: deficitWeight };
     }
 
     navigate('/loading', { state: { userConfig: finalConfig } });

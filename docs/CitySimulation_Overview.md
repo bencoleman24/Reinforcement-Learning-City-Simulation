@@ -28,9 +28,8 @@ Each household *h*:
 When a household is employed, the net pay is calculated as:
 
 $$
-\textit{net\_pay}_h = W_h \times (1 - T),
+\text{net\_pay}_h = W_h \times (1 - T),
 $$
-
 
 where *T* is the government tax rate (ranging from 0 to 0.75).
 

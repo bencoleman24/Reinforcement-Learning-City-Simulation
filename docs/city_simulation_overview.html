@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>City Simulation Overview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- MathJax Configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <!-- Load MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <!-- Optional: Add some basic styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        ul, ol {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>City Simulation Overview</h1>
+    
+    <p>This document provides a deep dive into the Reinforcement Learning City Simulation. It describes each component in the city, the step-by-step environment dynamics, and how the government RL agent interacts with the system.</p>
+    
+    <h2>1. Introduction</h2>
+    
+    <ul>
+        <li><strong>Purpose:</strong> Provide an interactive city environment where a government RL agent can manage policy choices (taxes, infrastructure, budget) to attempt to optimize their personalized objectives.</li>
+    </ul>
+    
+    <p><strong>High-Level System Flow</strong>:</p>
+    <ol>
+        <li>The RL policy chooses an action: (tax rate, infrastructure investment fraction, subsidy fraction).</li>
+        <li>Households earn wages, pay living costs, and update happiness. They may leave if they become too unhappy.</li>
+        <li>Firms (raw materials, manufacturer, retail) produce goods and pay wages. They also earn profits and may go bankrupt.</li>
+        <li>Government collects taxes, invests in infrastructure, pays subsidies.</li>
+        <li>The simulation repeats until the episode ends (default of 60 days).</li>
+    </ol>
+    
+    <h2>2. Households</h2>
+    
+    <h3>2.1 Core Attributes</h3>
+    
+    <p>Each household <em>h</em>:</p>
+    <ul>
+        <li><em>W<sub>h</sub></em>: Wage (if employed).</li>
+        <li><em>C<sub>living,h</sub></em>: Cost of living.</li>
+        <li><em>H<sub>h</sub></em>: Happiness (0 to 100).</li>
+        <li>Employment status (boolean).</li>
+    </ul>
+    
+    <h3>2.2 Net Pay</h3>
+    <p>When a household is employed, the net pay is calculated as:</p>
+    
+    <p>$$
+    \textit{net\_pay}_h = W_h \times (1 - T),
+    $$</p>
+    
+    <p>where <em>T</em> is the government tax rate (ranging from 0 to 0.75).</p>
+    
+    <h3>2.3 Happiness Update</h3>
+    
+    <p>Let <em>H<sub>h</sub></em> be happiness. Each day, we update:</p>
+    
+    <p>$$
+    H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot \textit{infrastructure} - \beta \cdot \textit{shortfall}, 0\bigr), 100\bigr).
+    $$</p>
+    
+    <ul>
+        <li><em>α</em> is a small weight factor (e.g., 0.02).</li>
+        <li><em>shortfall</em> penalizes households that cannot afford essentials.</li>
+        <li><em>β</em> is the penalty weight for shortfall.</li>
+        <li><em>H<sub>h</sub></em> is clamped between 0 and 100.</li>
+    </ul>
+    
+    <h3>2.4 Leaving the City</h3>
+    <p>A household may leave if <em>H<sub>h</sub></em> is too low.</p>
+    
+    <p>The formula for deciding whether the individual leaves can be written as:</p>
+    
+    <p>$$
+    \text{decide\_if\_leave} = 
+    \begin{cases} 
+    \text{True}, & \text{if } H_h < 5 \text{ and } \text{random.random()} < 0.3 \\
+    \text{True}, & \text{if } 5 \leq H_h < 10 \text{ and } \text{random.random()} < 0.1 \\
+    \text{False}, & \text{otherwise}
+    \end{cases}
+    $$</p>
+    
+    <h2>3. Firms</h2>
+    
+    <h3>3.1 Core Attributes</h3>
+    <p>All firms share base logic:</p>
+    <ul>
+        <li><em>base_wage</em>: Base amount paid to each employee.</li>
+        <li><em>num_employees</em>: Current employee count.</li>
+        <li><em>profitability_factor</em>: Scales overall revenue.</li>
+        <li><em>capital</em>: Removed if it drops below -300.</li>
+        <li>Methods for hiring and firing based on profit thresholds.</li>
+        <li>A capital account to track if they go bankrupt.</li>
+    </ul>
+    
+    <p>Profit for a generic firm each day:</p>
+    
+    <p>$$
+    \pi_f = (\textit{revenue} \times \textit{profitability\_factor}) - \textit{wages} - \textit{material\_costs}.
+    $$</p>
+    
+    <p>$$
+    \textit{wages} = \textit{num\_employees} \times \textit{base\_wage}
+    $$</p>
+    
+    <h3>3.2 Raw Material Firms</h3>
+    <ul>
+        <li>Produce raw materials which start the supply chain: $$\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$$</li>
+        <li>They sell these raw materials at <em>material_price</em>.</li>
+    </ul>
+    
+    <p>Their revenue is calculated:</p>
+    
+    <p>$$
+    \text{revenue}_{\text{raw}} = (\text{materials\_produced} \times \text{material\_price}) \times \text{profitability\_factor}
+    $$</p>
+    
+    <h3>3.3 Manufacturer Firms</h3>
+    
+    <ul>
+        <li>Buys raw materials at a cost <em>material_cost</em>.</li>
+        <li>Produces final goods ≤ <em>num_employees</em></li>
+        <li>Sells final goods at a <em>sale_price</em></li>
+    </ul>
+    
+    <p>Their revenue is calculated:</p>
+    
+    <p>$$
+    \text{revenue}_{\text{manu}} = (\text{final\_goods\_produced} \times \text{sale\_price}) \times \text{profitability\_factor}
+    $$</p>
+    
+    <h3>3.4 Retail Firms</h3>
+    <ul>
+        <li>Buys goods from manufacturers at a <em>wholesale_price</em></li>
+        <li>Sells at a <em>retail_price</em></li>
+    </ul>
+    
+    <p>Profit is calculated:</p>
+    
+    <p>$$
+    \text{profit} = (\text{retail\_price} - \text{wholesale\_price}) \times \text{goods\_sold} - \text{wages}
+    $$</p>
+    
+    <h2>4. Government</h2>
+    
+    <h3>4.1 Tax Rate</h3>
+    <p>A value $$\text{tax\_rate} \in [0, 0.75]$$ which is applied to both household wages and firm profits each day:</p>
+    
+    <p>$$
+    \text{total\_tax} = \text{tax\_rate} \times (\text{total\_wages} + \text{total\_profits})
+    $$</p>
+    
+    <p>Then:</p>
+    
+    <p>$$
+    \text{gov\_budget} \leftarrow \text{gov\_budget} + \text{total\_tax}
+    $$</p>
+    
+    <h3>4.2 Infrastructure Budget</h3>
+    <p>When the government chooses a fraction $$\beta_{\text{infra}} \in [0, 0.2]$$ (for instance):</p>
+    
+    <p>$$
+    \text{infrastructure\_investment} = \beta_{\text{infra}} \times \text{gov\_budget}
+    $$</p>
+    
+    <p>Then:</p>
+    
+    <p>$$
+    \text{gov\_budget} \leftarrow \text{gov\_budget} - \text{infrastructure\_investment}
+    $$</p>
+    
+    <p>$$
+    \text{infrastructure} \leftarrow \text{infrastructure} + \alpha_{\text{infra}} \times \text{infrastructure\_investment}
+    $$</p>
+    
+    <p>where $$\alpha_{\text{infra}}$$ is some multiplier.</p>
+    
+    <h3>4.3 Subsidies</h3>
+    <p>If $$\beta_{\text{subsidy}} \in [0, 0.15]$$ is chosen (for instance):</p>
+    
+    <p>$$
+    \text{total\_subsidy} = \beta_{\text{subsidy}} \times \text{gov\_budget}
+    $$</p>
+    
+    <p>Then:</p>
+    
+    <p>$$
+    \text{gov\_budget} \leftarrow \text{gov\_budget} - \text{total\_subsidy}
+    $$</p>
+    
+    <p>That total subsidy can be distributed to households. Each household might get a fraction of that. This can increase happiness slightly.</p>
+    
+    <h1>5. Step Function <em>(env.step(action))</em></h1>
+    <p>The function which triggers the actions needed to step through the simulation.</p>
+    
+    <ol>
+        <li>Parse action: $(\text{tax\_rate}, \beta_{\text{infra}}, \beta_{\text{subsidy}})$.</li>
+        <li>Update Government:
+            <ul>
+                <li>Collect taxes.</li>
+                <li>Subset of budget to infrastructure, to subsidies.</li>
+            </ul>
+        </li>
+        <li>Firms:
+            <ul>
+                <li>Produce goods, pay wages, compute profits, possibly go bankrupt.</li>
+                <li>Adjust (hire/fire) employees.</li>
+            </ul>
+        </li>
+        <li>Households:
+            <ul>
+                <li>Compute leftover money: $$\text{leftover\_money} = \text{net\_pay} - \text{cost\_of\_living}.$$</li>
+                <li>Update happiness with infrastructure boost, shortfall penalty, etc.</li>
+                <li>Possibly leave if happiness is too low.</li>
+            </ul>
+        </li>
+        <li>Shock (stochastic event).</li>
+        <li>Immigration:
+            <ul>
+                <li>If average happiness is high, a new household might appear.</li>
+            </ul>
+        </li>
+        <li>Compute reward for the RL agent, based on the chosen reward mode.</li>
+        <li>Return next observation $$o_{t+1}$$, reward $$r_t$$, done flag, and info dict.</li>
+    </ol>
+    
+    <h1>6. Action &amp; Observation Space</h1>
+    
+    <h3>6.1 Action Space</h3>
+    <ul>
+        <li>3D discrete (ex: $$[0..0.75] \times [0..0.2] \times [0..0.15]$$ in step increments).</li>
+        <li>Total possible actions = $$|\text{tax\_rate\_values}| \times |\text{infra\_fraction\_values}| \times |\text{subsidy\_fraction\_values}|$$.</li>
+    </ul>
+    
+    <h3>6.2 Observations</h3>
+    <p>For each step the environment returns a 4D continuous vector like:</p>
+    
+    <p>observation = $$\left[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}\right]$$.</p>
+    
+    <ul>
+        <li><em>b</em> = gov budget</li>
+        <li><em>infrastructure</em></li>
+        <li><em>average happiness</em> in [0..100]</li>
+        <li><em>population</em> in [0..∞]</li>
+    </ul>
+    
+    <h1>7. Government Reward Modes</h1>
+    <p>The government's reward is computed differently depending on the chosen <em>reward_mode</em>:</p>
+    
+    <ol>
+        <li><strong>basic_happiness</strong>:
+            <p>$$
+            R = 2.0 \times \text{avg\_happiness} - \gamma_{\text{budget}} \times \max(0, -\text{budget}) - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
+            $$</p>
+        </li>
+        <li><strong>growth</strong>:
+            <p>$$
+            R = 0.3 \times \text{avg\_happiness} + 2.0 \times \text{population} + 0.03 \times \text{GDP} - \dots
+            $$</p>
+        </li>
+        <li><strong>strict_budget</strong>:
+            <p>$$
+            R = 0.8 \times \text{avg\_happiness} + F(\text{budget}) - \text{profit\_penalty}
+            $$</p>
+        </li>
+        <li><strong>dark_lord</strong>:
+            <p>$$
+            R = -5.0 \times \text{avg\_happiness} + 0.3 \times \max(0, -\text{budget}) + 0.1 \times \text{population} + \dots
+            $$</p>
+        </li>
+        <li><strong>custom</strong> (set by user):
+            <p>$$
+            R = w_{\text{hap}} \times \text{avg\_happiness} + w_{\text{pop}} \times \text{population} + w_{\text{infra}} \times \text{infrastructure} + w_{\text{profit}} \times \text{daily\_profits} - w_{\text{deficit}} \times \max(0, -\text{budget})
+            $$</p>
+        </li>
+    </ol>
+    
+    <h1>8. Shock Events (Optional Configuration)</h1>
+    
+    <p>The probability of a shock each step is $$\text{shock\_probability}$$. If a shock is triggered, certain firm production is halved, or other negative events occur.</p>
+    
+    <p>$$
+    \text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
+    $$</p>
+    
+    <p>For example, if triggered, raw material production factor may be shocked as so:</p>
+    
+    <p>$$
+    \text{production\_factor} \times= 0.5
+    $$</p>
+    
+    <h1>9. Infrastructure Decay</h1>
+    <p>Each step, a small fraction of infrastructure decays:</p>
+    
+    <p>$$
+    \text{infrastructure} \leftarrow \text{infrastructure} \times (1 - \delta),
+    $$</p>
+    
+    <p>with $$\delta \approx 0.01$$.</p>
+    
+    <h1>10. Bankruptcies</h1>
+    <p>A firm is removed if:</p>
+    
+    <p>$$
+    \text{capital} < -300.
+    $$</p>
+    
+    <p>Once it is removed, it cannot produce nor hire.</p>
+    
+    <h1>11. RL Training</h1>
+    <p>The environment is wrapped via <code>DummyVecEnv</code> from <a href="https://github.com/DLR-RM/stable-baselines3">Stable Baselines3</a>. An RL algorithm (<em>PPO</em>) is used:</p>
+    
+    <ol>
+        <li>Create Environment: <code>env = CityEnv(...)</code></li>
+        <li>Wrap: <code>vec_env = DummyVecEnv([lambda: env])</code></li>
+        <li>Train with chosen timesteps (Currently set at 15,000) and hyperparameters (<em>learning_rate</em>, <em>n_steps</em>, etc.).</li>
+        <li>The agent learns to pick an action (<em>tax_rate</em>, <em>infra_fraction</em>, <em>subsidy_fraction</em>) that maximizes their reward function.</li>
+    </ol>
+    
+    <p>We use this snippet to train:</p>
+    
+    <pre><code>model = PPO("MlpPolicy", vec_env, n_steps=1024, batch_size=128, learning_rate=1e-4, gamma=0.99, verbose=1)
+model.learn(total_timesteps=15000)
+</code></pre>
+    
+    <h2>12. Final Simulation Rollout</h2>
+    <p>Once training is finished, a new environment is created with the same configuration, and the RL agent is run in it in <em>deterministic</em> mode for the specified amount of days (default of 60). We record daily metrics - household happiness, budget, population, spending, and profit.</p>
+    
+    <h3>12.1 Re-Initializing the Environment</h3>
+    <p>The environment is re-initialized as follows:</p>
+    <pre><code>env = CityEnv(**param_config)
+obs = env.reset()
+done = False
+step = 0
+</code></pre>
+    
+    <p>We end up with a fresh environment where no prior knowledge or state is carried over. The RL agent now uses the <em>trained policy</em> to make decisions.</p>
+    
+    <h3>12.2 Rollout with the Learned Policy:</h3>
+    
+    <p>We repeatedly do</p>
+    <pre><code>action, _states = model.predict(obs, deterministic=True)
+obs, reward, done, info = env.step(action)
+step += 1
+</code></pre>
+    
+    <ul>
+        <li><code>deterministic = True</code> makes the policy pick the best known action rather than sampling a distribution.</li>
+        <li>Each <code>info</code> dictionary includes useful metrics for that timestamp.</li>
+        <li>This loop continues until the episode length is reached.</li>
+    </ul>
+    
+    <h3>12.3 Storing Time-Series Data</h3>
+    <p>As the environment steps forward, we store arrays of data:</p>
+    <ul>
+        <li><em>time_steps</em>: The day index.</li>
+        <li><em>happiness_series</em>: The day's average household happiness.</li>
+        <li><em>population_series</em>: The current city population.</li>
+        <li><em>budget_series</em>: The current government budget.</li>
+        <li><em>profit_series</em>: The aggregated profit from firms that day.</li>
+        <li><em>leftover_spend_series</em>: The sum of leftover money after cost of living.</li>
+    </ul>
+    
+    <h2>13. Conclusion</h2>
+    
+    <p>This simulation shows a simplified example of how a government RL agent can adapt policy decisions to influence an urban economy.</p>
+    
+    <h3>Potential Future Extensions</h3>
+    <p>There is a lot of room for potential improvements in this simulation as the complexities of a real society environment are difficult to replicate.</p>
+    
+    <p>Below are some potential future directions:</p>
+    
+    <ul>
+        <li><strong>Increased System Complexity</strong>: More households/firms/types of firms/additional cities interacting with each other.</li>
+        <li><strong>Expanding # of RL Agents</strong>: Making the households or firms act as agents with their own reward functions is a logical expansion, making the system feel more alive. The system would need to be extremely balanced and fine-tuned first.</li>
+    </ul>
+    
+</body>
+</html>

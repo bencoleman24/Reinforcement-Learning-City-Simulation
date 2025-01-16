@@ -66,7 +66,7 @@ Oversees the city by adjusting daily policy levers:
 3. **Environment** (Gym-Style)  
    - See [docs/CitySimulation.md](./docs/CitySimulation_Overview.md) for a full breakdown of Household logic, Firms, Government policies, reward modes, and daily step mechanics.
 
-**Hosted on [Render](https://render.com).**  
+**Website hosted on [Render](https://render.com).**  
 ---
 
 ## **Enjoy exploring the RL City Simulator!** Contributions and feedback are welcome. 

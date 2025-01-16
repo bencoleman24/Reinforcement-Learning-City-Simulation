@@ -4,14 +4,16 @@ This document provides a deep dive into the Reinforcement Learning City Simulati
 
 ## 1. Introduction
 
-- Purpose: Provide an interactive city environment where a government RL agent can manage policy choices (taxes, infrastructure, budget) to attempt to optimize their personalized objectives. 
+- Purpose: Provide an interactice city environment where a government RL agent can manage policy choices (taxes, infrastructure, budget) to attempt to optimize their personalized objectives. 
 
 **High-Level System Flow**:
-1. The RL policy chooses an action: (tax rate, infrastructure investment fraction, subsidy fraction).
+1. The RL policy chooses an action: (tax rate, infastructure investment fraction, subsidy fraction).
 2. Households earn wages, pay living costs, and update happiness. They may leave if they become too unhappy.
 3. Firms (raw materials, manufacturer, retail) produce goods and pay wages. They also earn profits and may go bankrupt. 
 4. Government collects taxes, invests in infrastructure, pays subsidies.
 5. The simulation repeats until the episode ends (default of 60 days).
+
+
 
 ## 2. Households
 ### 2.1 Core Attributes
@@ -29,6 +31,7 @@ $$
 \textit{net\_pay}_h = W_h \times (1 - T),
 $$
 
+
 where *T* is the government tax rate (ranging from 0 to 0.75).
 
 ### 2.3 Happiness Update
@@ -39,7 +42,8 @@ $$
 H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot \textit{infrastructure} - \beta \cdot \textit{shortfall}, 0\bigr), 100\bigr).
 $$
 
-- *α* is a small weight factor (e.g., 0.02).
+
+- *α* is a small weight factor (e.g. 0.02).
 - *shortfall* penalizes households that cannot afford essentials.
 - *β* is the penalty weight for shortfall.
 - *H*<sub>h</sub> is clamped between 0 and 100.
@@ -48,6 +52,9 @@ $$
 A household may leave if *H*<sub>h</sub> is too low.
 
 The formula for deciding whether the individual leaves can be written as:
+
+
+
 
 $$
 \text{decide\_if\_leave} = 
@@ -62,12 +69,12 @@ $$
 ### 3.1 Core Attributes
 All firms share base logic:
 
-- *base\_wage*: Base amount paid to each employee.
-- *num\_employees*: Current employee count.
-- *profitability\_factor*: Scales overall revenue.
+- *base_wage*: Base amount paid to each employee.
+- *num_employees*: Current employee count.
+- *profitability_factor*: Scales overall revenue.
 - *capital*: Removed if it drops below -300.
-- Methods for hiring and firing based on profit thresholds.
-- A capital account to track if they go bankrupt.
+- Methods for hirong and firing based on profit thresholds.
+- A capital account to track if they go bankrupt. 
 
 Profit for a generic firm each day:
 $$
@@ -79,9 +86,9 @@ $$
 $$
 
 ### 3.2 Raw Material Firms
-- Produce raw materials which start the supply chain: $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$.
+- Produce raw materials which start the supply chain $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$
 
-- They sell these raw materials at *material\_price*.
+- They sell these raw materials at *material_price*.
 
 Their revenue is calculated:
 $$
@@ -90,9 +97,9 @@ $$
 
 ### 3.3 Manufacturer Firms
 
-- Buys raw materials at a cost *material\_cost*.
-- Produces final goods $\leq \text{num\_employees}$.
-- Sells final goods at a *sale\_price*.
+- Buys raw materials at a cost *material_cost*.
+- Produces final goods $\leq \text{num\_employees}$
+- Sells final goods at a *sale_price*
 
 Their revenue is calculated:
 $$
@@ -100,8 +107,8 @@ $$
 $$
 
 ### 3.4 Retail Firms
-- Buys goods from manufacturers at a *wholesale\_price*.
-- Sells at a *retail\_price*.
+- Buys goods from manufacturers at a *wholesale_price*
+- Sells at a *retail_price*
 
 Profit is calculated:
 $$
@@ -111,9 +118,8 @@ $$
 ## 4. Government
 ### 4.1 Tax Rate
 A value $\text{tax\_rate} \in [0, 0.75]$
-which is applied to both household wages and firm profits each day:
-
-$$
+ which is applied to both household wages and firm profits each day:
+ $$
 \text{total\_tax} = \text{tax\_rate} \times (\text{total\_wages} + \text{total\_profits})
 $$
 
@@ -123,7 +129,7 @@ $$
 \text{gov\_budget} \leftarrow \text{gov\_budget} + \text{total\_tax}
 $$
 
-### 4.2 Infrastructure Budget 
+### 4.2 Infastructure Budget 
 When the government chooses a fraction $\beta_{\text{infra}} \in [0, 0.2]$ (for instance):
 
 $$
@@ -157,6 +163,8 @@ $$
 
 That total subsidy can be distributed to households. Each household might get a fraction of that. This can increase happiness slightly.
 
+
+
 # 5 Step Function *(env.step(action))*
 The function which triggers the actions needed to step through the simulation.
 
@@ -188,15 +196,16 @@ For each step the environment returns a 4D continuous vector like:
 
 observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}]$.
 
+
 - $b$ = gov budget
 - $infrastructure$
-- $average\ happiness$ in $[0..100]$
+- $average happiness$ in $[0..100]$
 - $population$ in $[0..\infty]$
 
 # 7 Government Reward Modes
-The government's reward is computed differently depending on the chosen *reward\_mode*:
+The government's reward is computed differently depending on the chosen *reward_mode*:
 
-1. *basic\_happiness*:
+1. *basic_happiness*:
    $$
    R = 2.0 \times \text{avg\_happiness} - \gamma_{\text{budget}} \times \max(0, -\text{budget}) - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
    $$
@@ -206,12 +215,12 @@ The government's reward is computed differently depending on the chosen *reward\
    R = 0.3 \times \text{avg\_happiness} + 2.0 \times \text{population} + 0.03 \times \text{GDP} - \dots
    $$
 
-3. *strict\_budget*:
+3. *strict_budget*:
    $$
    R = 0.8 \times \text{avg\_happiness} + F(\text{budget}) - \text{profit\_penalty}
    $$
 
-4. *dark\_lord*:
+4. *dark_lord*:
    $$
    R = -5.0 \times \text{avg\_happiness} + 0.3 \times \max(0, -\text{budget}) + 0.1 \times \text{population} + \dots
    $$
@@ -229,11 +238,12 @@ $$
 \text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
 $$
 
-For example, if triggered, raw material production factor may be shocked as so:
+For example if triggered, raw material production factor may be shocked as so:
 
 $$
 \text{production\_factor} \times = 0.5
 $$
+
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:
 $$

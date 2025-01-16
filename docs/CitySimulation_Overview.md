@@ -252,6 +252,7 @@ For example if triggered, raw material production factor may be shocked as so:
 $$
 \text{production\_factor} \times = 0.5
 $$
+
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:
 $$

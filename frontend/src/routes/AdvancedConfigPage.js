@@ -12,12 +12,15 @@ function AdvancedConfig() {
   const [inflation, setInflation] = useState(0.0);
   const [demandSens, setDemandSens] = useState(0.35);
   const [wageMin, setWageMin] = useState(13);
+
   const [deficitWeight, setDeficitWeight] = useState(0.0);
   const [hapWeight, setHapWeight] = useState(1.0);
   const [popWeight, setPopWeight] = useState(0.0);
   const [infraWeight, setInfraWeight] = useState(0.0);
   const [profitWeight, setProfitWeight] = useState(0.0);
   const [hasCustomDefaultsBeenSet, setHasCustomDefaultsBeenSet] = useState(false);
+
+  const [showHoverMsg, setShowHoverMsg] = useState(false);
 
   function resetCustomSliders() {
     setDeficitWeight(1.0);
@@ -102,20 +105,58 @@ function AdvancedConfig() {
 
   return (
     <div className="page-container">
-      <h2 className="mb-2">Advanced Configuration</h2>
+      {/* Hover events for heading */}
+      <h2
+        className="mb-2"
+        onMouseEnter={() => setShowHoverMsg(true)}
+        onMouseLeave={() => setShowHoverMsg(false)}
+        style={{ position: 'relative' }}
+      >
+        Advanced Configuration
+      </h2>
+      {/* Tooltip message below heading */}
+      {showHoverMsg && (
+        <div
+          style={{
+            position: 'absolute',
+            backgroundColor: '#333',
+            color: '#fff',
+            padding: '0.6rem',
+            borderRadius: '6px',
+            width: 'max-content',
+            maxWidth: '280px',
+            marginTop: '3.5rem',
+            fontSize: '0.85rem',
+          }}
+        >
+          For more advanced users looking for more city customization options
+        </div>
+      )}
+
       <button onClick={handleBackToBasic} style={{ marginBottom: '1rem' }}>
         ← Back to Basic
       </button>
+
       <div className="panel">
         <p style={{ marginBottom: '0.5rem' }}>Choose your government approach:</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '1rem',
+            marginBottom: '1rem',
+          }}
+        >
           {builtInModes.map((gov) => (
             <div
               key={gov.key}
               onClick={() => handleGovSelection(gov.key)}
               className="clickable"
               style={{
-                border: govMode === gov.key ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+                border:
+                  govMode === gov.key
+                    ? '2px solid var(--accent-color)'
+                    : '1px solid var(--border-color)',
                 padding: '1rem',
                 borderRadius: '8px',
                 cursor: 'pointer',
@@ -131,7 +172,10 @@ function AdvancedConfig() {
             onClick={() => handleGovSelection(customMode.key)}
             className="clickable"
             style={{
-              border: govMode === customMode.key ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+              border:
+                govMode === customMode.key
+                  ? '2px solid var(--accent-color)'
+                  : '1px solid var(--border-color)',
               padding: '1rem',
               borderRadius: '8px',
               width: '280px',
@@ -151,6 +195,7 @@ function AdvancedConfig() {
                 }}
               >
                 <h5 style={{ marginBottom: '0.5rem' }}>Custom RL Weights</h5>
+
                 <label style={{ display: 'block', marginBottom: '0.25rem' }}>
                   Happiness: {hapWeight.toFixed(1)}
                 </label>
@@ -162,6 +207,7 @@ function AdvancedConfig() {
                   value={hapWeight}
                   onChange={(e) => setHapWeight(parseFloat(e.target.value))}
                 />
+
                 <label style={{ display: 'block', margin: '0.75rem 0 0.25rem 0' }}>
                   Population: {popWeight.toFixed(1)}
                 </label>
@@ -173,6 +219,7 @@ function AdvancedConfig() {
                   value={popWeight}
                   onChange={(e) => setPopWeight(parseFloat(e.target.value))}
                 />
+
                 <label style={{ display: 'block', margin: '0.75rem 0 0.25rem 0' }}>
                   Infrastructure: {infraWeight.toFixed(1)}
                 </label>
@@ -184,6 +231,7 @@ function AdvancedConfig() {
                   value={infraWeight}
                   onChange={(e) => setInfraWeight(parseFloat(e.target.value))}
                 />
+
                 <label style={{ display: 'block', margin: '0.75rem 0 0.25rem 0' }}>
                   Profit: {profitWeight.toFixed(1)}
                 </label>
@@ -195,6 +243,7 @@ function AdvancedConfig() {
                   value={profitWeight}
                   onChange={(e) => setProfitWeight(parseFloat(e.target.value))}
                 />
+
                 <label style={{ display: 'block', margin: '0.75rem 0 0.25rem 0' }}>
                   Deficit: {deficitWeight.toFixed(1)}
                 </label>
@@ -211,6 +260,7 @@ function AdvancedConfig() {
           </div>
         </div>
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Cost of Living: {colValue.toFixed(1)}
@@ -224,6 +274,7 @@ function AdvancedConfig() {
           onChange={(e) => setColValue(parseFloat(e.target.value))}
         />
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Episode Length: {episodeLen}
@@ -237,6 +288,7 @@ function AdvancedConfig() {
           onChange={(e) => setEpisodeLen(parseInt(e.target.value))}
         />
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Shock Probability: {shockProb.toFixed(2)}
@@ -250,6 +302,7 @@ function AdvancedConfig() {
           onChange={(e) => setShockProb(parseFloat(e.target.value))}
         />
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Inflation Rate: {inflation.toFixed(2)}
@@ -263,6 +316,7 @@ function AdvancedConfig() {
           onChange={(e) => setInflation(parseFloat(e.target.value))}
         />
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Demand Sensitivity: {demandSens.toFixed(2)}
@@ -276,6 +330,7 @@ function AdvancedConfig() {
           onChange={(e) => setDemandSens(parseFloat(e.target.value))}
         />
       </div>
+
       <div className="panel">
         <label style={{ display: 'block', marginBottom: '0.25rem' }}>
           Household Min Wage: {wageMin}
@@ -289,6 +344,7 @@ function AdvancedConfig() {
           onChange={(e) => setWageMin(parseInt(e.target.value))}
         />
       </div>
+
       <button onClick={handleRunSimulation} style={{ marginTop: '1rem', padding: '0.75rem 2rem' }}>
         Run Simulation
       </button>

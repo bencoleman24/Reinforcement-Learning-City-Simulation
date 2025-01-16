@@ -81,7 +81,7 @@ Here are some example screenshots of the website pages:
 ### 1. Landing / Intro Page
 ![Landing Page](./docs/screenshots/landing-page.png)
 
-### 2. Basic Configuration
+### 2. Basic Configuration Page
 ![Basic Config](./docs/screenshots/basic-config.png)
 
 ### 3. Results Page (Zoomed out)

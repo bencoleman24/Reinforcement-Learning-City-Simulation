@@ -8,6 +8,7 @@ function BasicConfig() {
   const [govMode, setGovMode] = useState('basic_happiness');
   const [colValue, setColValue] = useState(7.0);
   const [episodeLen, setEpisodeLen] = useState(60);
+  const [showAdvancedTooltip, setShowAdvancedTooltip] = useState(false);
 
   const govOptions = [
     { key: 'basic_happiness', label: 'Happiness', description: 'Prioritizes household happiness' },
@@ -96,20 +97,42 @@ function BasicConfig() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '2rem' }}>
-        <button
-          onClick={handleAdvanced}
-          style={{
-            padding: '0.75rem 2rem',
-            backgroundColor: 'var(--accent-color)',
-            border: 'none',
-            borderRadius: '5px',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '1rem',
-          }}
-        >
-          Advanced Configuration
-        </button>
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={handleAdvanced}
+            onMouseEnter={() => setShowAdvancedTooltip(true)}
+            onMouseLeave={() => setShowAdvancedTooltip(false)}
+            style={{
+              padding: '0.75rem 2rem',
+              backgroundColor: 'var(--accent-color)',
+              border: 'none',
+              borderRadius: '5px',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '1rem',
+            }}
+          >
+            Advanced Configuration
+          </button>
+
+          {showAdvancedTooltip && (
+            <div
+              style={{
+                position: 'absolute',
+                marginTop: '0.5rem',
+                backgroundColor: '#333',
+                color: '#fff',
+                padding: '0.7rem',
+                borderRadius: '4px',
+                width: '220px',
+                textAlign: 'center',
+                fontSize: '0.85rem',
+              }}
+            >
+              For more advanced users looking for more city customization options
+            </div>
+          )}
+        </div>
 
         <button
           onClick={handleRunSimulation}

@@ -31,7 +31,7 @@ $$
 
 where *T* is the government tax rate (ranging from 0 to 0.75).
 
-In plain text, we’ll refer to `net_pay` with backticks.
+In plain text, we’ll refer to `net_pay` with backticks. 
 
 ### 2.3 Happiness Update
 
@@ -64,9 +64,9 @@ $$
 ### 3.1 Core Attributes
 All firms share base logic:
 
-- `base_wage`: Base amount paid to each employee.
-- `num_employees`: Current employee count.
-- `profitability_factor`: Scales overall revenue.
+- `base\_wage`: Base amount paid to each employee.
+- `num\_employees`: Current employee count.
+- `profitability\_factor`: Scales overall revenue.
 - `capital`: Removed if it drops below -300.
 - Methods for hirong and firing based on profit thresholds.
 - A capital account to track if they go bankrupt.
@@ -102,8 +102,8 @@ $$
 $$
 
 ### 3.4 Retail Firms
-- Buys goods from manufacturers at a `wholesale_price`
-- Sells at a `retail_price`
+- Buys goods from manufacturers at a `wholesale\_price`
+- Sells at a `retail\_price`
 
 Profit is calculated:
 $$
@@ -171,7 +171,7 @@ The function which triggers the actions needed to step through the simulation.
    - Produce goods, pay wages, compute profits, possibly go bankrupt.
    - Adjust (hire/fire) employees.
 4. Households:
-   - Compute leftover money: $\text{leftover\_money} = \text{net\_pay} - \text{cost\_of\_living}$.
+   - Compute leftover money: `leftover\_money` = `net\_pay` - `cost\_of\_living`.
    - Update happiness with infrastructure boost, shortfall penalty, etc.
    - Possibly leave if happiness is too low.
 5. Shock (stochastic event).
@@ -241,7 +241,7 @@ The government's reward is computed differently depending on the chosen *reward_
 
 # 8. **Shock Events (Optional Configuration)**
 
-The probability of a shock each step is `shock_probability`. If a shock is triggered, certain firm production is halved, or other negative events occur.
+The probability of a shock each step is `shock\_probability`. If a shock is triggered, certain firm production is halved, or other negative events occur.
 
 $$
 \text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
@@ -336,6 +336,4 @@ Below are some potential future directions:
 
 - **Increased System Complexity**: more households/firms/types of firms/ additional cities interacting with each other.
 - **Expanding # of RL agents**: Making the households or firms act as agents with their own reward functions is a logical expansion making the system feel more alive. The system would need to be extremely balanced and fine-tuned first. 
-
-
 

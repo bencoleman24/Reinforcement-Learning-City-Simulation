@@ -13,8 +13,6 @@ This document provides a deep dive into the Reinforcement Learning City Simulati
 4. Government collects taxes, invests in infrastructure, pays subsidies.
 5. The simulation repeats until the episode ends (default of 60 days).
 
-
-
 ## 2. Households
 ### 2.1 Core Attributes
 
@@ -32,6 +30,8 @@ $$
 $$
 
 where *T* is the government tax rate (ranging from 0 to 0.75).
+
+In plain text, we’ll refer to `net_pay` with backticks.
 
 ### 2.3 Happiness Update
 
@@ -64,12 +64,12 @@ $$
 ### 3.1 Core Attributes
 All firms share base logic:
 
-- *base\_wage*: Base amount paid to each employee.
-- *num\_employees*: Current employee count.
-- *profitability\_factor*: Scales overall revenue.
-- *capital*: Removed if it drops below -300.
+- `base_wage`: Base amount paid to each employee.
+- `num_employees`: Current employee count.
+- `profitability_factor`: Scales overall revenue.
+- `capital`: Removed if it drops below -300.
 - Methods for hirong and firing based on profit thresholds.
-- A capital account to track if they go bankrupt. 
+- A capital account to track if they go bankrupt.
 
 Profit for a generic firm each day:
 $$
@@ -83,7 +83,7 @@ $$
 ### 3.2 Raw Material Firms
 - Produce raw materials which start the supply chain $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$
 
-- They sell these raw materials at *material\_price*.
+- They sell these raw materials at `material_price`.
 
 Their revenue is calculated:
 $$
@@ -92,9 +92,9 @@ $$
 
 ### 3.3 Manufacturer Firms
 
-- Buys raw materials at a cost *material\_cost*.
+- Buys raw materials at a cost `material_cost`.
 - Produces final goods $\leq \text{num\_employees}$
-- Sells final goods at a *sale\_price*
+- Sells final goods at a `sale_price`
 
 Their revenue is calculated:
 $$
@@ -102,8 +102,8 @@ $$
 $$
 
 ### 3.4 Retail Firms
-- Buys goods from manufacturers at a *wholesale\_price*
-- Sells at a *retail\_price*
+- Buys goods from manufacturers at a `wholesale_price`
+- Sells at a `retail_price`
 
 Profit is calculated:
 $$
@@ -123,6 +123,8 @@ Then:
 $$
 \text{gov\_budget} \leftarrow \text{gov\_budget} + \text{total\_tax}
 $$
+
+In plain text, we’ll refer to `gov_budget`.
 
 ### 4.2 Infastructure Budget 
 When the government chooses a fraction $\beta_{\text{infra}} \in [0, 0.2]$ (for instance):
@@ -158,8 +160,6 @@ $$
 
 That total subsidy can be distributed to households. Each household might get a fraction of that. This can increase happiness slightly.
 
-
-
 # 5 Step Function *(env.step(action))*
 The function which triggers the actions needed to step through the simulation.
 
@@ -180,6 +180,8 @@ The function which triggers the actions needed to step through the simulation.
 7. Compute reward for the RL agent, based on the chosen reward mode.
 8. Return next observation $o_{t+1}$, reward $r_t$, done flag, and info dict.
 
+In plain text, we refer to `leftover_money` and `cost_of_living` with backticks.
+
 # 6. Action & Observation Space
 
 ### 6.1 Action Space
@@ -189,24 +191,30 @@ The function which triggers the actions needed to step through the simulation.
 ### 6.2 Observations 
 For each step the environment returns a 4D continuous vector like:
 
-observation = $\bigl[\tfrac{b}{200.0}, \tfrac{\text{infrastructure}}{50.0}, \tfrac{\text{avg\_happiness}}{100.0}, \tfrac{\text{population}}{200.0}\bigr]$.
+$$
+\bigl[\tfrac{b}{200.0}, \tfrac{\text{infrastructure}}{50.0}, \tfrac{\text{avg\_happiness}}{100.0}, \tfrac{\text{population}}{200.0}\bigr].
+$$
 
-- $b$ = gov budget
-- $infrastructure$
-- $average happiness$ in $[0..100]$
-- $population$ in $[0..\infty]$
+- `b` = government budget
+- `infrastructure`
+- `avg_happiness` in [0..100]
+- `population` in [0..∞]
 
 # 7 Government Reward Modes
 The government's reward is computed differently depending on the chosen *reward_mode*:
 
 1. *basic_happiness*:
    $$
-   R = 2.0 \times \text{avg\_happiness} - \gamma_{\text{budget}} \times \max(0, -\text{budget}) - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
+   R = 2.0 \times \text{avg\_happiness} 
+       - \gamma_{\text{budget}} \times \max(0, -\text{budget})
+       - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
    $$
 
 2. *growth*:
    $$
-   R = 0.3 \times \text{avg\_happiness} + 2.0 \times \text{population} + 0.03 \times \text{GDP} - \dots
+   R = 0.3 \times \text{avg\_happiness} 
+       + 2.0 \times \text{population} 
+       + 0.03 \times \text{GDP} - \dots
    $$
 
 3. *strict\_budget*:
@@ -216,17 +224,24 @@ The government's reward is computed differently depending on the chosen *reward_
 
 4. *dark\_lord*:
    $$
-   R = -5.0 \times \text{avg\_happiness} + 0.3 \times \max(0, -\text{budget}) + 0.1 \times \text{population} + \dots
+   R = -5.0 \times \text{avg\_happiness} 
+       + 0.3 \times \max(0, -\text{budget}) 
+       + 0.1 \times \text{population} 
+       + \dots
    $$
 
 5. *custom* (set by user):
    $$
-   R = w_{\text{hap}} \times \text{avg\_happiness} + w_{\text{pop}} \times \text{population} + w_{\text{infra}} \times \text{infrastructure} + w_{\text{profit}} \times \text{daily\_profits} - w_{\text{deficit}} \times \max(0, -\text{budget})
+   R = w_{\text{hap}} \times \text{avg\_happiness}
+       + w_{\text{pop}} \times \text{population}
+       + w_{\text{infra}} \times \text{infrastructure}
+       + w_{\text{profit}} \times \text{daily\_profits}
+       - w_{\text{deficit}} \times \max(0, -\text{budget})
    $$
 
 # 8. **Shock Events (Optional Configuration)**
 
-The probability of a shock each step is $\text{shock\_probability}$. If a shock is triggered, certain firm production is halved, or other negative events occur.
+The probability of a shock each step is `shock_probability`. If a shock is triggered, certain firm production is halved, or other negative events occur.
 
 $$
 \text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
@@ -237,8 +252,6 @@ For example if triggered, raw material production factor may be shocked as so:
 $$
 \text{production\_factor} \times = 0.5
 $$
-
-
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:
 $$

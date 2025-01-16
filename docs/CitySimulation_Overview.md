@@ -31,7 +31,6 @@ $$
 \textit{net\_pay}_h = W_h \times (1 - T),
 $$
 
-
 where *T* is the government tax rate (ranging from 0 to 0.75).
 
 ### 2.3 Happiness Update
@@ -42,7 +41,6 @@ $$
 H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot \textit{infrastructure} - \beta \cdot \textit{shortfall}, 0\bigr), 100\bigr).
 $$
 
-
 - *α* is a small weight factor (e.g. 0.02).
 - *shortfall* penalizes households that cannot afford essentials.
 - *β* is the penalty weight for shortfall.
@@ -52,9 +50,6 @@ $$
 A household may leave if *H*<sub>h</sub> is too low.
 
 The formula for deciding whether the individual leaves can be written as:
-
-
-
 
 $$
 \text{decide\_if\_leave} = 
@@ -69,9 +64,9 @@ $$
 ### 3.1 Core Attributes
 All firms share base logic:
 
-- *base_wage*: Base amount paid to each employee.
-- *num_employees*: Current employee count.
-- *profitability_factor*: Scales overall revenue.
+- *base\_wage*: Base amount paid to each employee.
+- *num\_employees*: Current employee count.
+- *profitability\_factor*: Scales overall revenue.
 - *capital*: Removed if it drops below -300.
 - Methods for hirong and firing based on profit thresholds.
 - A capital account to track if they go bankrupt. 
@@ -195,7 +190,6 @@ The function which triggers the actions needed to step through the simulation.
 For each step the environment returns a 4D continuous vector like:
 
 observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}]$.
-
 
 - $b$ = gov budget
 - $infrastructure$

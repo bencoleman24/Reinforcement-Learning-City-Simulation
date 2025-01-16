@@ -83,7 +83,7 @@ $$
 ### 3.2 Raw Material Firms
 - Produce raw materials which start the supply chain $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$
 
-- They sell these raw materials at *material_price*.
+- They sell these raw materials at *material\_price*.
 
 Their revenue is calculated:
 $$
@@ -92,9 +92,9 @@ $$
 
 ### 3.3 Manufacturer Firms
 
-- Buys raw materials at a cost *material_cost*.
+- Buys raw materials at a cost *material\_cost*.
 - Produces final goods $\leq \text{num\_employees}$
-- Sells final goods at a *sale_price*
+- Sells final goods at a *sale\_price*
 
 Their revenue is calculated:
 $$
@@ -102,8 +102,8 @@ $$
 $$
 
 ### 3.4 Retail Firms
-- Buys goods from manufacturers at a *wholesale_price*
-- Sells at a *retail_price*
+- Buys goods from manufacturers at a *wholesale\_price*
+- Sells at a *retail\_price*
 
 Profit is calculated:
 $$
@@ -189,7 +189,7 @@ The function which triggers the actions needed to step through the simulation.
 ### 6.2 Observations 
 For each step the environment returns a 4D continuous vector like:
 
-observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}]$.
+observation = $\bigl[\tfrac{b}{200.0}, \tfrac{\text{infrastructure}}{50.0}, \tfrac{\text{avg\_happiness}}{100.0}, \tfrac{\text{population}}{200.0}\bigr]$.
 
 - $b$ = gov budget
 - $infrastructure$
@@ -209,12 +209,12 @@ The government's reward is computed differently depending on the chosen *reward_
    R = 0.3 \times \text{avg\_happiness} + 2.0 \times \text{population} + 0.03 \times \text{GDP} - \dots
    $$
 
-3. *strict_budget*:
+3. *strict\_budget*:
    $$
    R = 0.8 \times \text{avg\_happiness} + F(\text{budget}) - \text{profit\_penalty}
    $$
 
-4. *dark_lord*:
+4. *dark\_lord*:
    $$
    R = -5.0 \times \text{avg\_happiness} + 0.3 \times \max(0, -\text{budget}) + 0.1 \times \text{population} + \dots
    $$
@@ -237,6 +237,7 @@ For example if triggered, raw material production factor may be shocked as so:
 $$
 \text{production\_factor} \times = 0.5
 $$
+
 
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:

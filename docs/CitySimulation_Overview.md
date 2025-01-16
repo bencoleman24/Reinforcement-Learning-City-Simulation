@@ -4,12 +4,12 @@ This document provides a deep dive into the Reinforcement Learning City Simulati
 
 ## 1. Introduction
 
-- Purpose: Provide an interactice city environment where a government RL agent can manage policy choices (taxes, infrastructure, budget) to attempt to optimize their personalized objectives. 
+- Purpose: Provide an interactice city environment where a government RL agent can manage policy choices (taxes, infrastructure, budget) to attempt to optimize their personalized objectives.
 
 **High-Level System Flow**:
 1. The RL policy chooses an action: (tax rate, infastructure investment fraction, subsidy fraction).
 2. Households earn wages, pay living costs, and update happiness. They may leave if they become too unhappy.
-3. Firms (raw materials, manufacturer, retail) produce goods and pay wages. They also earn profits and may go bankrupt. 
+3. Firms (raw materials, manufacturer, retail) produce goods and pay wages. They also earn profits and may go bankrupt.
 4. Government collects taxes, invests in infrastructure, pays subsidies.
 5. The simulation repeats until the episode ends (default of 60 days).
 
@@ -31,7 +31,7 @@ $$
 
 where *T* is the government tax rate (ranging from 0 to 0.75).
 
-In plain text, we’ll refer to `net_pay` with backticks. 
+In plain text, we might refer to it as `net\_pay` (escaped underscore).
 
 ### 2.3 Happiness Update
 
@@ -82,8 +82,7 @@ $$
 
 ### 3.2 Raw Material Firms
 - Produce raw materials which start the supply chain $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$
-
-- They sell these raw materials at `material_price`.
+- They sell these raw materials at `material\_price`.
 
 Their revenue is calculated:
 $$
@@ -92,9 +91,9 @@ $$
 
 ### 3.3 Manufacturer Firms
 
-- Buys raw materials at a cost `material_cost`.
+- Buys raw materials at a cost `material\_cost`.
 - Produces final goods $\leq \text{num\_employees}$
-- Sells final goods at a `sale_price`
+- Sells final goods at a `sale\_price`
 
 Their revenue is calculated:
 $$
@@ -124,9 +123,9 @@ $$
 \text{gov\_budget} \leftarrow \text{gov\_budget} + \text{total\_tax}
 $$
 
-In plain text, we’ll refer to `gov_budget`.
+(Outside math mode we can say `gov\_budget`.)
 
-### 4.2 Infastructure Budget 
+### 4.2 Infastructure Budget
 When the government chooses a fraction $\beta_{\text{infra}} \in [0, 0.2]$ (for instance):
 
 $$
@@ -145,7 +144,7 @@ $$
 
 where $\alpha_{\text{infra}}$ is some multiplier.
 
-### 4.3 Subsidies 
+### 4.3 Subsidies
 If $\beta_{\text{subsidy}} \in [0, 0.15]$ is chosen (for instance):
 
 $$
@@ -171,7 +170,7 @@ The function which triggers the actions needed to step through the simulation.
    - Produce goods, pay wages, compute profits, possibly go bankrupt.
    - Adjust (hire/fire) employees.
 4. Households:
-   - Compute leftover money: `leftover\_money` = `net\_pay` - `cost\_of\_living`.
+   - Compute leftover money: $\text{leftover\_money} = \text{net\_pay} - \text{cost\_of\_living}$.
    - Update happiness with infrastructure boost, shortfall penalty, etc.
    - Possibly leave if happiness is too low.
 5. Shock (stochastic event).
@@ -180,7 +179,7 @@ The function which triggers the actions needed to step through the simulation.
 7. Compute reward for the RL agent, based on the chosen reward mode.
 8. Return next observation $o_{t+1}$, reward $r_t$, done flag, and info dict.
 
-In plain text, we refer to `leftover_money` and `cost_of_living` with backticks.
+In plain text, we’d refer to `leftover\_money` and `cost\_of\_living` with escaped underscores.
 
 # 6. Action & Observation Space
 
@@ -188,7 +187,7 @@ In plain text, we refer to `leftover_money` and `cost_of_living` with backticks.
 - 3D discrete (ex: $[0..0.75] \times [0..0.2] \times [0..0.15]$ in step increments).
 - Total possible actions = $|\text{tax\_rate\_values}| \times |\text{infra\_fraction\_values}| \times |\text{subsidy\_fraction\_values}|$.
 
-### 6.2 Observations 
+### 6.2 Observations
 For each step the environment returns a 4D continuous vector like:
 
 $$
@@ -197,23 +196,23 @@ $$
 
 - `b` = government budget
 - `infrastructure`
-- `avg_happiness` in [0..100]
+- `avg\_happiness` in [0..100]
 - `population` in [0..∞]
 
 # 7 Government Reward Modes
-The government's reward is computed differently depending on the chosen *reward_mode*:
+The government's reward is computed differently depending on the chosen *reward\_mode*:
 
-1. *basic_happiness*:
+1. *basic\_happiness*:
    $$
-   R = 2.0 \times \text{avg\_happiness} 
+   R = 2.0 \times \text{avg\_happiness}
        - \gamma_{\text{budget}} \times \max(0, -\text{budget})
        - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
    $$
 
 2. *growth*:
    $$
-   R = 0.3 \times \text{avg\_happiness} 
-       + 2.0 \times \text{population} 
+   R = 0.3 \times \text{avg\_happiness}
+       + 2.0 \times \text{population}
        + 0.03 \times \text{GDP} - \dots
    $$
 
@@ -224,9 +223,9 @@ The government's reward is computed differently depending on the chosen *reward_
 
 4. *dark\_lord*:
    $$
-   R = -5.0 \times \text{avg\_happiness} 
-       + 0.3 \times \max(0, -\text{budget}) 
-       + 0.1 \times \text{population} 
+   R = -5.0 \times \text{avg\_happiness}
+       + 0.3 \times \max(0, -\text{budget})
+       + 0.1 \times \text{population}
        + \dots
    $$
 
@@ -247,14 +246,14 @@ $$
 \text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
 $$
 
-For example if triggered, raw material production factor may be shocked as so:
+For example, if triggered, raw material production factor may be shocked as so:
 
 $$
 \text{production\_factor} \times = 0.5
 $$
 
-# 9 . Infrastructure Decay
-Each step, a small fraction of infastructure decays:
+# 9. Infrastructure Decay
+Each step, a small fraction of infrastructure decays:
 $$
 \text{infrastructure} \leftarrow \text{infrastructure} \times (1 - \delta),
 $$

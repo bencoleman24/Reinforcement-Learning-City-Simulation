@@ -28,7 +28,7 @@ Each household *h*:
 When a household is employed, the net pay is calculated as:
 
 $$
-\mathit{net\_pay}_h = W_h \times (1 - T),
+\mathrm{net\_pay}_h = W_h \times (1 - T),
 $$
 
 

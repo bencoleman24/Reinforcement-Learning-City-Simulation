@@ -38,7 +38,7 @@ where *T* is the government tax rate (ranging from 0 to 0.75).
 Let *H*<sub>h</sub> be happiness. Each day, we update:
 
 $$
-H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot infrastructure - \beta \cdot shortfall, 0\bigr), 100\bigr).
+H_h = \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot infrastructure - \beta \cdot shortfall, 0\bigr), 100\bigr).
 $$
 
 - *α* is a small weight factor (e.g. 0.02).
@@ -130,7 +130,7 @@ $$
 Then:
 
 $$
-govBudget \leftarrow govBudget + totalTax
+govBudget = govBudget + totalTax
 $$
 
 ### 4.2 Infastructure Budget 
@@ -143,11 +143,11 @@ $$
 Then:
 
 $$
-govBudget \leftarrow govBudget - infrastructureInvestment
+govBudget = govBudget - infrastructureInvestment
 $$
 
 $$
-infrastructure \leftarrow infrastructure + \alpha_{\text{infra}} \times infrastructureInvestment
+infrastructure = infrastructure + \alpha_{\text{infra}} \times infrastructureInvestment
 $$
 
 where $\alpha_{\text{infra}}$ is some multiplier.
@@ -162,7 +162,7 @@ $$
 Then:
 
 $$
-govBudget \leftarrow govBudget - totalSubsidy
+govBudget = govBudget - totalSubsidy
 $$
 
 That total subsidy can be distributed to households. Each household might get a fraction of that. This can increase happiness slightly.
@@ -235,6 +235,7 @@ R
 \;-\;
 \text{profitPenalty}.
 $$
+
 3. *strict_budget*:
 
 $$
@@ -262,9 +263,13 @@ R
 \;+\;
 0.2 \times \max\bigl(0,\,-\text{totalProfits}\bigr).
 $$
+
 5. *custom* (set by user):
 
-   $$R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)$$
+$$
+R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)
+$$
+
 
 # 8. **Shock Events (Optional Configuration)**
 
@@ -284,7 +289,7 @@ $$
 Each step, a small fraction of infastructure decays:
 
 $$
-infrastructure \leftarrow infrastructure \times (1 - \delta),
+infrastructure = infrastructure \times (1 - \delta),
 $$
 with $\delta \approx 0.01$.
 

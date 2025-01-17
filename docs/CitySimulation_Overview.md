@@ -190,12 +190,12 @@ The function which triggers the actions needed to step through the simulation.
 
 ### 6.1 Action Space
 - 3D discrete (ex: $[0..0.75] \times [0..0.2] \times [0..0.15]$ in step increments).
-- Total possible actions = $|\text{tax\_rate\_values}| \times |\text{infra\_fraction\_values}| \times |\text{subsidy\_fraction\_values}|$.
+- Total possible actions = $|\text{taxRateValues}| \times |\text{infraFractionValues}| \times |\text{subsidyFractionValues}|$.
 
 ### 6.2 Observations 
 For each step the environment returns a 4D continuous vector like:
 
-observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}]$.
+observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avgHappiness}}{100.0}, \frac{\text{population}}{200.0}]$.
 
 - $b$ = gov budget
 - $infrastructure$

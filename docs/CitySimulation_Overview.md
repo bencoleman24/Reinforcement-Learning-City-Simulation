@@ -28,10 +28,8 @@ Each household *h*:
 When a household is employed, the net pay is calculated as:
 
 $$
-\mathrm{net\_pay}_h = W_h \times (1 - T),
+\text{netPayH} = W_h \times (1 - T),
 $$
-
-
 
 where *T* is the government tax rate (ranging from 0 to 0.75).
 
@@ -40,9 +38,8 @@ where *T* is the government tax rate (ranging from 0 to 0.75).
 Let *H*<sub>h</sub> be happiness. Each day, we update:
 
 $$
-H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot \textit{infrastructure} - \beta \cdot \textit{shortfall}, 0\bigr), 100\bigr).
+H_h \leftarrow \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot infrastructure - \beta \cdot shortfall, 0\bigr), 100\bigr).
 $$
-
 
 - *α* is a small weight factor (e.g. 0.02).
 - *shortfall* penalizes households that cannot afford essentials.
@@ -54,11 +51,8 @@ A household may leave if *H*<sub>h</sub> is too low.
 
 The formula for deciding whether the individual leaves can be written as:
 
-
-
-
 $$
-\text{decide\_if\_leave} = 
+\text{decideIfLeave} = 
 \begin{cases} 
 \text{True}, & \text{if } H_h < 5 \text{ and } \text{random.random()} < 0.3 \\
 \text{True}, & \text{if } 5 \leq H_h < 10 \text{ and } \text{random.random()} < 0.1 \\
@@ -79,32 +73,35 @@ All firms share base logic:
 
 Profit for a generic firm each day:
 $$
-\pi_f = (\textit{revenue} \times \textit{profitability\_factor}) - \textit{wages} - \textit{material\_costs}.
+\pi_f = (revenue \times profitabilityFactor) - wages - materialCosts.
 $$
 
 $$
-\textit{wages} = \textit{num\_employees} \times \textit{base\_wage}
+wages = numEmployees \times baseWage
 $$
 
 ### 3.2 Raw Material Firms
-- Produce raw materials which start the supply chain $\text{materials\_produced} = \text{num\_employees} \times \text{production\_factor}$
+- Produce raw materials which start the supply chain 
+  $$
+  materialsProduced = numEmployees \times productionFactor
+  $$
 
 - They sell these raw materials at *material_price*.
 
 Their revenue is calculated:
 $$
-\text{revenue}_{\text{raw}} = (\text{materials\_produced} \times \text{material\_price}) \times \text{profitability\_factor}
+revenue_{\text{raw}} = (materialsProduced \times materialPrice) \times profitabilityFactor
 $$
 
 ### 3.3 Manufacturer Firms
 
 - Buys raw materials at a cost *material_cost*.
-- Produces final goods $\leq \text{num\_employees}$
+- Produces final goods $\leq \text{numEmployees}$
 - Sells final goods at a *sale_price*
 
 Their revenue is calculated:
 $$
-\text{revenue}_{\text{manu}} = (\text{final\_goods\_produced} \times \text{sale\_price}) \times \text{profitability\_factor}
+revenue_{\text{manu}} = (finalGoodsProduced \times salePrice) \times profitabilityFactor
 $$
 
 ### 3.4 Retail Firms
@@ -113,38 +110,38 @@ $$
 
 Profit is calculated:
 $$
-\text{profit} = (\text{retail\_price} - \text{wholesale\_price}) \times \text{goods\_sold} - \text{wages}
+profit = (retailPrice - wholesalePrice) \times goodsSold - wages
 $$
 
 ## 4. Government
 ### 4.1 Tax Rate
-A value $\text{tax\_rate} \in [0, 0.75]$
+A value $\text{taxRate} \in [0, 0.75]$
  which is applied to both household wages and firm profits each day:
  $$
-\text{total\_tax} = \text{tax\_rate} \times (\text{total\_wages} + \text{total\_profits})
+\text{totalTax} = taxRate \times (totalWages + totalProfits)
 $$
 
 Then:
 
 $$
-\text{gov\_budget} \leftarrow \text{gov\_budget} + \text{total\_tax}
+govBudget \leftarrow govBudget + totalTax
 $$
 
 ### 4.2 Infastructure Budget 
 When the government chooses a fraction $\beta_{\text{infra}} \in [0, 0.2]$ (for instance):
 
 $$
-\text{infrastructure\_investment} = \beta_{\text{infra}} \times \text{gov\_budget}
+infrastructureInvestment = \beta_{\text{infra}} \times govBudget
 $$
 
 Then:
 
 $$
-\text{gov\_budget} \leftarrow \text{gov\_budget} - \text{infrastructure\_investment}
+govBudget \leftarrow govBudget - infrastructureInvestment
 $$
 
 $$
-\text{infrastructure} \leftarrow \text{infrastructure} + \alpha_{\text{infra}} \times \text{infrastructure\_investment}
+infrastructure \leftarrow infrastructure + \alpha_{\text{infra}} \times infrastructureInvestment
 $$
 
 where $\alpha_{\text{infra}}$ is some multiplier.
@@ -153,13 +150,13 @@ where $\alpha_{\text{infra}}$ is some multiplier.
 If $\beta_{\text{subsidy}} \in [0, 0.15]$ is chosen (for instance):
 
 $$
-\text{total\_subsidy} = \beta_{\text{subsidy}} \times \text{gov\_budget}
+totalSubsidy = \beta_{\text{subsidy}} \times govBudget
 $$
 
 Then:
 
 $$
-\text{gov\_budget} \leftarrow \text{gov\_budget} - \text{total\_subsidy}
+govBudget \leftarrow govBudget - totalSubsidy
 $$
 
 That total subsidy can be distributed to households. Each household might get a fraction of that. This can increase happiness slightly.
@@ -169,7 +166,7 @@ That total subsidy can be distributed to households. Each household might get a 
 # 5 Step Function *(env.step(action))*
 The function which triggers the actions needed to step through the simulation.
 
-1. Parse action: $(\text{tax\_rate}, \beta_{\text{infra}}, \beta_{\text{subsidy}})$.
+1. Parse action: $(\text{taxRate}, \beta_{\text{infra}}, \beta_{\text{subsidy}})$.
 2. Update Government:
    - Collect taxes.
    - Subset of budget to infrastructure, to subsidies.
@@ -177,7 +174,10 @@ The function which triggers the actions needed to step through the simulation.
    - Produce goods, pay wages, compute profits, possibly go bankrupt.
    - Adjust (hire/fire) employees.
 4. Households:
-   - Compute leftover money: $\text{leftover\_money} = \text{net\_pay} - \text{cost\_of\_living}$.
+   - Compute leftover money: 
+   $$
+   leftoverMoney = netPay - costOfLiving
+   $$
    - Update happiness with infrastructure boost, shortfall penalty, etc.
    - Possibly leave if happiness is too low.
 5. Shock (stochastic event).
@@ -197,7 +197,6 @@ For each step the environment returns a 4D continuous vector like:
 
 observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text{avg\_happiness}}{100.0}, \frac{\text{population}}{200.0}]$.
 
-
 - $b$ = gov budget
 - $infrastructure$
 - $average happiness$ in $[0..100]$
@@ -208,47 +207,47 @@ The government's reward is computed differently depending on the chosen *reward_
 
 1. *basic_happiness*:
    $$
-   R = 2.0 \times \text{avg\_happiness} - \gamma_{\text{budget}} \times \max(0, -\text{budget}) - \gamma_{\text{profit}} \times \max(0, -\text{daily\_profit})
+   R = 2.0 \times avgHappiness - gammaBudget \times \max(0, -budget) - gammaProfit \times \max(0, -dailyProfit)
    $$
 
 2. *growth*:
    $$
-   R = 0.3 \times \text{avg\_happiness} + 2.0 \times \text{population} + 0.03 \times \text{GDP} - \dots
+   R = 0.3 \times avgHappiness + 2.0 \times population + 0.03 \times GDP - \dots
    $$
 
 3. *strict_budget*:
    $$
-   R = 0.8 \times \text{avg\_happiness} + F(\text{budget}) - \text{profit\_penalty}
+   R = 0.8 \times avgHappiness + F(\text{budget}) - profitPenalty
    $$
 
 4. *dark_lord*:
    $$
-   R = -5.0 \times \text{avg\_happiness} + 0.3 \times \max(0, -\text{budget}) + 0.1 \times \text{population} + \dots
+   R = -5.0 \times avgHappiness + 0.3 \times \max(0, -budget) + 0.1 \times population + \dots
    $$
 
 5. *custom* (set by user):
    $$
-   R = w_{\text{hap}} \times \text{avg\_happiness} + w_{\text{pop}} \times \text{population} + w_{\text{infra}} \times \text{infrastructure} + w_{\text{profit}} \times \text{daily\_profits} - w_{\text{deficit}} \times \max(0, -\text{budget})
+   R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)
    $$
 
 # 8. **Shock Events (Optional Configuration)**
 
-The probability of a shock each step is $\text{shock\_probability}$. If a shock is triggered, certain firm production is halved, or other negative events occur.
+The probability of a shock each step is $\text{shockProbability}$. If a shock is triggered, certain firm production is halved, or other negative events occur.
 
 $$
-\text{shock\_triggered} \sim \text{Bernoulli}(\text{shock\_probability})
+\text{shockTriggered} \sim \text{Bernoulli}(\text{shockProbability})
 $$
 
 For example if triggered, raw material production factor may be shocked as so:
 
 $$
-\text{production\_factor} \times = 0.5
+productionFactor \times = 0.5
 $$
 
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:
 $$
-\text{infrastructure} \leftarrow \text{infrastructure} \times (1 - \delta),
+infrastructure \leftarrow infrastructure \times (1 - \delta),
 $$
 with $\delta \approx 0.01$.
 
@@ -256,10 +255,11 @@ with $\delta \approx 0.01$.
 A firm is removed if:
 
 $$
-\text{capital} < -300.
+capital < -300.
 $$
 
 Once it is removed it cannot produce nor hire.
+
 
 # 11. RL Training
 

@@ -72,6 +72,7 @@ All firms share base logic:
 - A capital account to track if they go bankrupt. 
 
 Profit for a generic firm each day:
+
 $$
 \pi_f = (revenue \times profitabilityFactor) - wages - materialCosts.
 $$
@@ -82,6 +83,7 @@ $$
 
 ### 3.2 Raw Material Firms
 - Produce raw materials which start the supply chain 
+
   $$
   materialsProduced = numEmployees \times productionFactor
   $$
@@ -243,6 +245,7 @@ $$
 
 # 9 . Infrastructure Decay
 Each step, a small fraction of infastructure decays:
+
 $$
 infrastructure \leftarrow infrastructure \times (1 - \delta),
 $$

@@ -179,9 +179,7 @@ The function which triggers the actions needed to step through the simulation.
    - Adjust (hire/fire) employees.
 4. Households:
    - Compute leftover money: 
-   $$
-   leftoverMoney = netPay - costOfLiving
-   $$
+$$leftoverMoney = netPay - costOfLiving$$
    - Update happiness with infrastructure boost, shortfall penalty, etc.
    - Possibly leave if happiness is too low.
 5. Shock (stochastic event).
@@ -211,33 +209,23 @@ The government's reward is computed differently depending on the chosen *reward_
 
 1. *basic_happiness*:
 
-   $$
-   R = 2.0 \times avgHappiness - gammaBudget \times \max(0, -budget) - gammaProfit \times \max(0, -dailyProfit)
-   $$
+   $$R = 2.0 \times avgHappiness - gammaBudget \times \max(0, -budget) - gammaProfit \times \max(0, -dailyProfit)$$
 
 2. *growth*:
 
-   $$
-   R = 0.3 \times avgHappiness + 2.0 \times population + 0.03 \times GDP - \dots
-   $$
+   $$R = 0.3 \times avgHappiness + 2.0 \times population + 0.03 \times GDP - \dots$$
 
 3. *strict_budget*:
 
-   $$
-   R = 0.8 \times avgHappiness + F(\text{budget}) - profitPenalty
-   $$
+   $$R = 0.8 \times avgHappiness + F(\text{budget}) - profitPenalty$$
 
 4. *dark_lord*:
 
-   $$
-   R = -5.0 \times avgHappiness + 0.3 \times \max(0, -budget) + 0.1 \times population + \dots
-   $$
+$$R = -5.0 \times avgHappiness + 0.3 \times \max(0, -budget) + 0.1 \times population + \dots$$
 
 5. *custom* (set by user):
 
-   $$
-   R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)
-   $$
+   $$R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)$$
 
 # 8. **Shock Events (Optional Configuration)**
 

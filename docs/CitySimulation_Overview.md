@@ -89,6 +89,7 @@ $$
 - They sell these raw materials at *material_price*.
 
 Their revenue is calculated:
+
 $$
 revenue_{\text{raw}} = (materialsProduced \times materialPrice) \times profitabilityFactor
 $$
@@ -100,6 +101,7 @@ $$
 - Sells final goods at a *sale_price*
 
 Their revenue is calculated:
+
 $$
 revenue_{\text{manu}} = (finalGoodsProduced \times salePrice) \times profitabilityFactor
 $$
@@ -109,6 +111,7 @@ $$
 - Sells at a *retail_price*
 
 Profit is calculated:
+
 $$
 profit = (retailPrice - wholesalePrice) \times goodsSold - wages
 $$
@@ -117,6 +120,7 @@ $$
 ### 4.1 Tax Rate
 A value $\text{taxRate} \in [0, 0.75]$
  which is applied to both household wages and firm profits each day:
+
  $$
 \text{totalTax} = taxRate \times (totalWages + totalProfits)
 $$

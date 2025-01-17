@@ -12,17 +12,7 @@ from retail_firm import RetailFirm
 from firm import Firm
 
 class CityEnv(gym.Env):
-    """
-    3D action approach with (tax_rate, infra_fraction, subsidy_fraction).
-    
-    Additional tweaks:
-      - shortfall penalty = -0.5
-      - initial capital = 100.0
-      - daily fluctuation ±1% for raw_firms
-      - remove firm if capital < -300
-      - boosted budget reward for 'strict_budget'
-    """
-
+  
     def __init__(
         self,
         num_households=50,
@@ -123,7 +113,6 @@ class CityEnv(gym.Env):
         self.cumulative_profit = 0.0
         self.debug_step_data = []
 
-        # shortfall penalty
         self.shortfall_base_penalty = -0.5
 
     def reset(self):
@@ -152,7 +141,6 @@ class CityEnv(gym.Env):
             )
             self.households.append(hh)
 
-        # Firms with capital=100
         starting_capital = 100.0
 
         for _ in range(self.num_raw_firms):
@@ -206,7 +194,6 @@ class CityEnv(gym.Env):
             elif rf.material_price > 20.0:
                 rf.material_price = 20.0
 
-        # RAW step
         total_raw_materials = 0.0
         raw_to_remove = []
         for rf in self.raw_firms_list:
@@ -341,7 +328,7 @@ class CityEnv(gym.Env):
 
         total_leftover = sum(leftover_money_list)
 
-        # shortfall (not fully modeled final goods => approximate)
+        
         goods_per_household = 0.0
         shortfall_fraction = 1.0 - min(1.0, goods_per_household / (self.essential_goods_demand + 1e-6))
         shortfall_penalty = self.shortfall_base_penalty * shortfall_fraction
@@ -424,7 +411,6 @@ class CityEnv(gym.Env):
         return sum(hh.happiness for hh in self.households) / len(self.households)
 
     def _maybe_apply_shock(self):
-        # done inline in step() to track shock_triggered easily
         pass
 
     def _compute_reward(self, avg_hap, budget, population, total_profits, total_wages):
@@ -446,12 +432,11 @@ class CityEnv(gym.Env):
             return rew
 
         elif self.reward_mode == "strict_budget":
-            # Slightly boosted surplus reward
             rew = 0.8 * avg_hap
             if budget < 0:
                 rew -= 0.3 * (abs(budget) ** 1.1)
             else:
-                rew += 0.20 * (budget ** 0.5)  # was 0.15
+                rew += 0.20 * (budget ** 0.5)  
             rew -= profit_penalty
             return rew
 

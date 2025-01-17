@@ -211,20 +211,57 @@ The government's reward is computed differently depending on the chosen *reward_
 
 1. *basic_happiness*:
 
-   $$R = 2.0 \times avgHappiness - gammaBudget \times \max(0, -budget) - gammaProfit \times \max(0, -dailyProfit)$$
+$$
+R 
+= 2.0 \times \text{avgHappiness}
+\;-\;
+0.05 \times \max\bigl(0,\,-\text{budget}\bigr)
+\;-\;
+\text{profitPenalty}.
+$$
+
 
 2. *growth*:
 
-   $$R = 0.3 \times avgHappiness + 2.0 \times population + 0.03 \times GDP - \dots$$
-
+$$
+R 
+= 0.3 \times \text{avgHappiness}
+\;+\;
+2.0 \times \text{population}
+\;+\;
+0.03 \times \text{GDP}
+\;-\;
+0.05 \times \max\bigl(0,\,-\text{budget}\bigr)
+\;-\;
+\text{profitPenalty}.
+$$
 3. *strict_budget*:
 
-   $$R = 0.8 \times avgHappiness + F(\text{budget}) - profitPenalty$$
+$$
+R 
+= 0.3 \times \text{avgHappiness}
+\;+\;
+2.0 \times \text{population}
+\;+\;
+0.03 \times \text{GDP}
+\;-\;
+0.05 \times \max\bigl(0,\,-\text{budget}\bigr)
+\;-\;
+\text{profitPenalty}.
+$$
 
 4. *dark_lord*:
 
-$$R = -5.0 \times avgHappiness + 0.3 \times \max(0, -budget) + 0.1 \times population + \dots$$
-
+$$
+R 
+= -5.0 \times \text{avgHappiness}
+\;+\;
+0.3 \times \max\bigl(0,\,-\text{budget}\bigr)
+\;+\;
+0.1 \times \text{population}
+\;+\;
+0.2 \times \max\bigl(0,\,-\text{totalProfits}\bigr).
+$$
 5. *custom* (set by user):
 
    $$R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)$$

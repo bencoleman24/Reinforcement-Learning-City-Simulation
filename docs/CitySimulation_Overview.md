@@ -210,26 +210,31 @@ observation = $[\frac{b}{200.0}, \frac{\text{infrastructure}}{50.0}, \frac{\text
 The government's reward is computed differently depending on the chosen *reward_mode*:
 
 1. *basic_happiness*:
+
    $$
    R = 2.0 \times avgHappiness - gammaBudget \times \max(0, -budget) - gammaProfit \times \max(0, -dailyProfit)
    $$
 
 2. *growth*:
+
    $$
    R = 0.3 \times avgHappiness + 2.0 \times population + 0.03 \times GDP - \dots
    $$
 
 3. *strict_budget*:
+
    $$
    R = 0.8 \times avgHappiness + F(\text{budget}) - profitPenalty
    $$
 
 4. *dark_lord*:
+
    $$
    R = -5.0 \times avgHappiness + 0.3 \times \max(0, -budget) + 0.1 \times population + \dots
    $$
 
 5. *custom* (set by user):
+
    $$
    R = wHap \times avgHappiness + wPop \times population + wInfra \times infrastructure + wProfit \times dailyProfits - wDeficit \times \max(0, -budget)
    $$

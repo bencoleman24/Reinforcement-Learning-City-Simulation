@@ -292,7 +292,9 @@ $$
 \text{infrastructure} = \text{infrastructure} \times (1 - \delta),
 $$
 
-with \( \delta \approx 0.01 \).
+$$
+\delta \approx 0.01
+$$
 
 
 # 10. Bankruptcies

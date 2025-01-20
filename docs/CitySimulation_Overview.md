@@ -291,7 +291,9 @@ Each step, a small fraction of infrastructure decays:
 $$
 \text{infrastructure} = \text{infrastructure} \times (1 - \delta),
 $$
+
 with \( \delta \approx 0.01 \).
+
 
 # 10. Bankruptcies
 A firm is removed if:

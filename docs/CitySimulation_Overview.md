@@ -84,9 +84,9 @@ $$
 ### 3.2 Raw Material Firms
 - Produce raw materials which start the supply chain 
 
-  $$
-  materialsProduced = numEmployees \times productionFactor
-  $$
+$$
+\text{materialsProduced} = \text{numEmployees} \times \text{productionFactor}
+$$
 
 - They sell these raw materials at *material_price*.
 

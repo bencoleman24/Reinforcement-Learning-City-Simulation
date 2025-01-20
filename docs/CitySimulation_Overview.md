@@ -286,12 +286,12 @@ productionFactor \times = 0.5
 $$
 
 # 9 . Infrastructure Decay
-Each step, a small fraction of infastructure decays:
+Each step, a small fraction of infrastructure decays:
 
 $$
-infrastructure = infrastructure \times (1 - \delta),
+\text{infrastructure} = \text{infrastructure} \times (1 - \delta),
 $$
-with $\delta \approx 0.01$.
+with \( \delta \approx 0.01 \).
 
 # 10. Bankruptcies
 A firm is removed if:

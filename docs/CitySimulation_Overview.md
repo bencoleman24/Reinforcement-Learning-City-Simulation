@@ -38,8 +38,9 @@ where *T* is the government tax rate (ranging from 0 to 0.75).
 Let *H*<sub>h</sub> be happiness. Each day, we update:
 
 $$
-H_h = \min\!\bigl(\max\!\bigl(H_h + \alpha \cdot infrastructure - \beta \cdot shortfall, 0\bigr), 100\bigr).
+H_h = \min\bigl(\max\bigl(H_h + \alpha \cdot infrastructure - \beta \cdot shortfall, 0\bigr), 100\bigr).
 $$
+
 
 - *α* is a small weight factor (e.g. 0.02).
 - *shortfall* penalizes households that cannot afford essentials.

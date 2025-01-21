@@ -1,4 +1,3 @@
-# city_env.py
 import random
 import numpy as np
 import gym
